@@ -131,7 +131,7 @@ public class Map {
 	 * @param y The y coordinate of the desired area.
 	 * @return Actor that is at the specified area. If no Actor is found, returns null.
 	 */
-	public Actor getMonsterAt(int x, int y) {
+	public Monster getMonsterAt(int x, int y) {
 		return grid[x][y].getMonster();
 	}
 	
@@ -143,3 +143,4 @@ public class Map {
 		return MAX_MAP_SIZE;
 	}
 }
+

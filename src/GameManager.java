@@ -2,6 +2,7 @@
  * This file contains classes relevant to managing the gameplay of the program.
  */
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -41,14 +42,21 @@ public class GameManager {
 			System.out.println(GAME_MAP.getDescription(playerX, playerY));
 
 			//Get whether there is a monster at current location.
-			Actor monsterAtLocation = GAME_MAP.getMonsterAt(playerX, playerY);
+			Monster monsterAtLocation = GAME_MAP.getMonsterAt(playerX, playerY);
 			//If there is a monster present, inform the player as to what the monster is called.
+			//Check if the monster has already been defeated.
 			if (monsterAtLocation != null) {
-				System.out.println("There is a monster here."
-						+ " I'd output its name if my code were finished.");
+				if(!monsterAtLocation.isAlive()) {
+					System.out.println(monsterAtLocation.getName() + " has alreay been defeated.");
+				}
+				else {
+					System.out.println("There is a monster here: "
+							+ monsterAtLocation.getName());
+				}
 			}
 
-			player.calculatePlayersLevel(player.getLevel(), player.getExperience(), player.getGainedXP());
+			System.out.println();
+			player.calculatePlayersLevel();
 			System.out.println();
 			
 			System.out.println("What now?\n"); //Prompt for user input.
@@ -123,23 +131,58 @@ public class GameManager {
 	}
 
 	/**
-	 * Begins a battle if a monster is present.
+	 * Begins a battle if the player chooses to attack and a monster is present.
+	 * Checks the player's inventory for weapons to use and gives them the option to select
+	 * which weapon they want to use.
 	 */
+
 	private static void beginBattle() {
+		if ((GAME_MAP.getMonsterAt(playerX, playerY) != null)&& (GAME_MAP.getMonsterAt(playerX, playerY).isAlive())) {
+			Scanner weaponScanner = new Scanner(System.in);
+			ArrayList<Item> weapons = new ArrayList<>();
+			for (Item s : player.getInventory()) {
+				if(s.name == Item.ItemType.Sword) {
+					weapons.add(s);
+				}
+				else if(s.name == Item.ItemType.Spear) {
+					weapons.add(s);
+				}
+			}
+			if(weapons.isEmpty()) {
+				System.out.println("No weapons available, fight the monster unarmed!");
+			}
+			else {
+				System.out.println("Choose a weapon to use in battle: ");
+				int i = 0;
+				for (Item w : weapons) {
+					if(w.name == Item.ItemType.Sword) {
+						System.out.println(i + " - " + w.getName());
+						i++;
+					}
+					else if(w.name == Item.ItemType.Spear) {
+						System.out.println(i + " - " + w.getName());
+						i++;
+					}
+				}
+					int weaponChoice = weaponScanner.nextInt();	 //user input will select item
+					player.setCurrentWeapon(player.getInventory().get(weaponChoice)); //get the weapon object from the inventory
 
-		if (GAME_MAP.getMonsterAt(playerX, playerY) != null) {
-			//TODO call BattleManager.
+			}
+
 			BattleManager battle = new BattleManager(player, (Monster) GAME_MAP.getMonsterAt(playerX, playerY));
-			System.out.println("WARNING - Feature Unimplemented");
-
-		} else {
+			
+		}
+		else {
 			System.out.println("There's no monster to battle!");
-			System.out.println("WARNING - Feature Unimplemented");
 		}
 	}
-
+	
+	/**
+	 * Method to handle using items in the player's inventory.
+	 * Checks if there are items in the inventory and lists them to allow the player to choose.
+	 * Uses the Item class to handle the behavior of the items.
+	 */
 	private static void beginUse() {
-		System.out.println("WARNING - Feature uncomplete");
 		if(player.getInventory().isEmpty()) {
 			System.out.println("Inventory is empty, keep searching for items.");
 		}
@@ -154,28 +197,32 @@ public class GameManager {
 					
 				Scanner useScanner = new Scanner(System.in); //initiate scanner to let user pick item to use
 				int itemChoice = useScanner.nextInt();		 //user input will select item
-					
 				Item chosenItem = player.getInventory().get(itemChoice); //get the item object from the inventory
-					
+
 				//call the use item method and pass in the player attributes
 				int[] stats = chosenItem.UseItem(player.getGold(), player.getHealth()
-						, player.getExperience());
-					
+						, player.getGainedXP());
+				
+				player.getInventory().remove(chosenItem);
+		    	
 				//update player attributes
 				player.setGold(stats[0]);
 				player.setHealth(stats[1]);
-				player.setExperience(stats[2]);
-			}
+				player.setGainedXP(stats[2]);
+				
+		}
 				
 	}
 	
+	/**
+	 * Method to display the player's current stats.
+	 * Prints the player's gold, health, level and remaining XP before levelling up. 
+	 */
 	private static void displayStats() {
 		System.out.print("Gold: " + player.getGold() + "\t\t");
 		System.out.print("Health: " + player.getHealth() + "\t");
 		System.out.println("Level: " + player.getLevel());
-		int nextLevelExp = (int) (3 * (player.getLevel() * 0.1) + 10);
-		int currentExp = player.getExperience();
-		int remainingExp = nextLevelExp - currentExp;
+		int remainingExp = player.getExperience() - player.getGainedXP();
 		System.out.println(remainingExp + "xp requierd to Level Up");
 	}
 

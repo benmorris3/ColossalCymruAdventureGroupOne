@@ -1,6 +1,8 @@
+import java.util.Random;
+
 /**
  * This class describes a collectible item rewarded after every battle.
- * @author jackroberts
+ * @author matthew milne
  *
  */
 public class Item {
@@ -17,6 +19,8 @@ public class Item {
 	
 	//private variable to hold the item name
 	public ItemType name;
+	protected int attackDamage;
+	private int MAX_ATTACK_DAMAGE = 20;
 
 	/**
 	 * Constructor that sets the type of item based on the enum values.
@@ -24,6 +28,7 @@ public class Item {
 	 */
 	public Item(ItemType name) {
     	setName(name);
+    	setAttackDamage(name);
     } 
 
 	/**
@@ -38,6 +43,13 @@ public class Item {
 	 */
     private void setName(ItemType name) {
         this.name = name;
+    }
+    
+    private void setAttackDamage(ItemType name) {
+    	if(name.equals(ItemType.Spear)||(name.equals(ItemType.Sword))){
+    		Random random = new Random(); 
+    		this.attackDamage = random.nextInt(MAX_ATTACK_DAMAGE);
+    	}
     }
    
     /**
@@ -57,33 +69,33 @@ public class Item {
     		return stats;
     	}
     	// if the item is the potion, then display a message and increase the health attribute.
-    	else if((name == ItemType.Potion)&& (health < 80)) {
-    		System.out.println("You take a swig of potion.");
-    		health += 20;
+    	else if((name == ItemType.Potion) && (health < 80)) {
+    		System.out.println("You take a swig of little potion.");
+    		stats[1] += 20;
     		return stats;
     	}
     	//if the item is a potion then ensure the health does not exceed 100.
     	else if((name == ItemType.Potion)&&(health >= 80)) {
-    		System.out.println("You take a swig of potion.");
-    		health = 100;
+    		System.out.println("You take a swig of big potion.");
+    		stats[1] = 100;
     		return stats;
     	}
     	// if the item is the bara birth, then display a message and increase the health attribute.
     	else if((name == ItemType.Bara_Birth)&&(health < 50)) {
-    		System.out.println("The taste of childhood rejuvenates you.");
-    		health += 50;
+    		System.out.println("The taste of childhood rejuvenates you...");
+    		stats[1] += 50;
     		return stats;
     	}
     	//if the item is a bara birth then ensure the health does not exceed 100.
     	else if((name == ItemType.Bara_Birth)&&(health >= 50)) {
     		System.out.println("The taste of childhood rejuvenates you.");
-    		health = 100;
+    		stats[1] = 100;
     		return stats;
     	}
     	//if the item is a textbook then display a message and increase the experience attribute.
     	else if(name == ItemType.Textbook){
     		System.out.println("Your newfound knowledge of Discrete Maths emboldens you.");
-    		exp += 75;
+    		stats[2] += 75;
     		return stats;
     	}
     	// if the item is the spear, then display a message only and return original attributes.
@@ -94,8 +106,8 @@ public class Item {
     	// if the item is the phone and the player has enough gold then increase the experience.
     	else if((name == ItemType.Phone)&&(gold >= 10)){
     		System.out.println("You call for some help.");
-    		gold -= 10;
-    		exp += 100;
+    		stats[0] -= 10;
+    		stats[2] += 100;
     		return stats;
     	}
     	// if the item is the phone but the player does not have enough gold then display an error.
@@ -106,8 +118,7 @@ public class Item {
     	else {
     		return stats;
     	}
-		
-	
+
     }
 
 }
