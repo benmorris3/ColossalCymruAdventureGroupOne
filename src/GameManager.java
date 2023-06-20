@@ -129,6 +129,7 @@ public class GameManager {
 
 		if (GAME_MAP.getMonsterAt(playerX, playerY) != null) {
 			//TODO call BattleManager.
+			BattleManager battle = new BattleManager(player, (Monster) GAME_MAP.getMonsterAt(playerX, playerY));
 			System.out.println("WARNING - Feature Unimplemented");
 
 		} else {
