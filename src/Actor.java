@@ -11,7 +11,7 @@ public abstract class Actor {
     protected int level;
     private String name;
     private int armourClass;
-    private int health;
+    protected int health;
 
     private final int MINIMUM_LEVEL = 0;
     private final int MAXIMUM_LEVEL = 100;
@@ -69,17 +69,17 @@ public abstract class Actor {
 }
 
     class Player extends Actor {
-        private int experience;
+    	public int experience;
         private ArrayList<Item> inventory;
-        private int gold;
+        protected int gold;
         private Item currentWeapon;
-        private int gainedXP;
+        protected int gainedXP;
         private final int MINIMUM_EXP = 0;
         private final int MINIMUM_GOLD = 0;
 
         public Player(int level, String name) {
             super(level, name);
-            this.experience = MINIMUM_EXP;
+            this.gainedXP = MINIMUM_EXP;
 
             this.inventory = new ArrayList<Item>();
 
@@ -87,12 +87,12 @@ public abstract class Actor {
 
             this.currentWeapon = null;
 
-            calculatePlayersLevel(level, experience, gainedXP);
+            calculatePlayersLevel();
         }
 
         // Getters and setters for player constructor
         public int getExperience() {
-            return experience;
+        	return experience;
         }
 
         public void setExperience(int experience) {
@@ -122,6 +122,10 @@ public abstract class Actor {
         public int getGainedXP() {
         	return gainedXP;
         }
+        
+        public void setGainedXP(int gainedXP) {
+        	this.gainedXP = gainedXP;
+        }
 
         public Item getCurrentWeapon() {
             return currentWeapon;
@@ -131,22 +135,30 @@ public abstract class Actor {
             this.currentWeapon = currentWeapon;
         }
 
-        public void calculatePlayersLevel(int level, int experience,
-                                                 int gainedXP) {
+        public void calculatePlayersLevel() {
             final int MAX_LEVEL = 100;
             final int MINIMUM_EXP = 0;
-            int requiredExp = (int) (3 * (level * 0.1) + 10);
+            boolean levelIncrease = false;
+            experience = (int) (Math.pow(3, (level * 0.1)) + 10);
             if (level < MAX_LEVEL) {
-                experience += gainedXP;
-                if (experience > requiredExp) {
+            	//while the player has enough experience, keep levelling up.
+                while (gainedXP > experience) {
+                	int excessXP = gainedXP - experience;
                     level += 1;
-                    System.out.println("You have leveled up! You are now level "
-                            + level + ".");
+                    levelIncrease = true;
+                    
+                    experience = (int) (Math.pow(3, (level * 0.1)) + 10);
+                    gainedXP = excessXP;
                 }
-            } else if (experience < MINIMUM_EXP) {
+                if(levelIncrease) {
+                	System.out.println("You have leveled up! You are now level "
+                            + this.level + ".");
+                }
+                
+            } else if (gainedXP < MINIMUM_EXP) {
             throw new IllegalArgumentException("Experience cannot be " +
                     "below 0.");
-            } else {
+            } else{
                 System.out.println("You have reached the maximum level." +
                         "You have been awarded 100 gold.");
                 setGold(gold + 100);
@@ -156,10 +168,12 @@ public abstract class Actor {
 
     class Monster extends Actor {
     private Item loot;
+    protected boolean alive;
 
     public Monster(int level, String name) {
         super(level, name);
         this.loot = generateRandomItem();
+        this.alive = true;
     }
 
         private Item generateRandomItem() {
@@ -182,6 +196,15 @@ public abstract class Actor {
     public void setLoot(Item loot) {
         this.loot = loot;
     }
+    
+    public void defeated() {
+    	this.alive = false;
+    }
+    
+    public boolean isAlive() {
+    	return this.alive;
+    }
+    
     @Override
     public String toString() {
         return "Monster - Name: " + getName() + ", Level: " + getLevel() +

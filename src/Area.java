@@ -6,7 +6,7 @@
 public class Area {
 	
 	private int areaLevel = 0;
-	private Actor monster = null; //Actor if monster is present in area. Null otherwise.
+	private Monster monster = null; //Actor if monster is present in area. Null otherwise.
 	private String description = null;
 	private static int lineNo = 0;
 	
@@ -16,7 +16,7 @@ public class Area {
 	 * @param areaLevel Difficulty level of an area, 0 to 100.
 	 * @param monster Actor of any monster if present in area. Null if no monster is present.
 	 */
-	public Area(String description, int areaLevel, Actor monster) {
+	public Area(String description, int areaLevel, Monster monster) {
 		this.areaLevel = areaLevel;
 		this.monster = monster;
 		this.description = description;
@@ -44,7 +44,7 @@ public class Area {
 	 * Provides Actor of monster in area.
 	 * @return Actor of monster in area, null if no monster is present.
 	 */
-	public Actor getMonster() {
+	public Monster getMonster() {
 		return monster;
 	}
 	
@@ -53,7 +53,7 @@ public class Area {
 	 * Allows update of monster in area.
 	 * @param monster Actor of new monster, null if no monster desired.
 	 */
-	public void setMonster(Actor monster) {
+	public void setMonster(Monster monster) {
 		this.monster = monster;
 	}
 

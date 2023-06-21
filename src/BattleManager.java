@@ -35,13 +35,19 @@ public class BattleManager {
 			System.out.println();
 			// If it is the player's turn then call attack method against the monster
 			if(playerTurn == true) {
-				int randomAttack = rand.nextInt(MAX_ATTACK_VALUE + 1);
-				System.out.println("Need to implement weapon attack damage into Item class!!");
-				attack(randomAttack,player.getArmourClass());
+				if(player.getCurrentWeapon()== null) {
+					int randomAttack = rand.nextInt(MAX_ATTACK_VALUE + 1);
+					attack(randomAttack,monster.getArmourClass());
+				}
+				else {
+					Item weapon = player.getCurrentWeapon();
+					attack(weapon.attackDamage,player.getArmourClass());
+				}
+				
 			// If it is the monster's turn then call attack method against the player
 			} else {
 				int randomAttack = rand.nextInt(MAX_ATTACK_VALUE + 1);
-				attack(randomAttack,monster.getArmourClass());
+				attack(randomAttack,player.getArmourClass());
 			}
 			// Reset to the other actor
 			playerTurn = !playerTurn;
@@ -52,7 +58,14 @@ public class BattleManager {
 		// Otherwise state that the monster has been killed
 		} else {
 			System.out.println(monster.getName() + " has been killed!");
+			monster.defeated();
 			System.out.println(player.getName() + " has won the battle!");
+			//Put the loot item into the player's inventory
+			player.getInventory().add(monster.getLoot());
+			System.out.println(player.getName() + " picked up a " + monster.getLoot().getName());
+			//give the player the required gold and xp
+			player.setGainedXP(player.getGainedXP()+100);
+			player.setGold(player.getGold()+5);
 		}
 	}
 	/**
